@@ -1,0 +1,50 @@
+[
+  {
+    "titre": "Terrain de 300 mètres carrés à vendre à Malicounda",
+    "prix": "4.000.000Fr",
+    "localisation": null,
+    "type_bien": "Terrain",
+    "nombre_chambres": null,
+    "surface": "300 mètres"
+  },
+  {
+    "titre": "Terrain de 2000 mètres carrés à vendre à Nguérigne Sénégal",
+    "prix": "70.000.000Fr",
+    "localisation": "Terrain de 2000 mètres carrés à vendre à Nguérigne Sénégal",
+    "type_bien": "Terrain",
+    "nombre_chambres": null,
+    "surface": "2000 mètres"
+  },
+  {
+    "titre": "Terrain de 300 mètres carrés à vendre à Malicounda Sénégal",
+    "prix": "4.000.000Fr",
+    "localisation": "Terrain de 300 mètres carrés à vendre à Malicounda Sénégal",
+    "type_bien": "Terrain",
+    "nombre_chambres": null,
+    "surface": "300 mètres"
+  },
+  {
+    "titre": "Terrain de 600 mètres carrés à vendre à Saly Sénégal",
+    "prix": "50.000.000Fr",
+    "localisation": "Terrain de 600 mètres carrés à vendre à Saly Sénégal",
+    "type_bien": "Terrain",
+    "nombre_chambres": null,
+    "surface": "600 mètres"
+  },
+  {
+    "titre": "Maison à vendre à Saly Sénégal",
+    "prix": "25.000.000Fr",
+    "localisation": "Maison à vendre à Saly Sénégal",
+    "type_bien": "Maison",
+    "nombre_chambres": null,
+    "surface": null
+  },
+  {
+    "titre": "Terrain de 500 mètres carrés à vendre à Nguérigne Sénégal",
+    "prix": "19.000.000Fr",
+    "localisation": "Terrain de 500 mètres carrés à vendre à Nguérigne Sénégal",
+    "type_bien": "Terrain",
+    "nombre_chambres": null,
+    "surface": "500 mètres"
+  }
+]
