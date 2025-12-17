@@ -147,7 +147,7 @@ if __name__ == "__main__":
     local_path = save_to_local_csv(data, csv_filename)
 
     # Upload vers S3
-    if upload_file_s3(local_path):
+    if upload_to_s3(local_path):
         print("Téléversement S3 réussi!")
     else:
         print("Échec du téléversement S3, vérifiez les logs pour plus de détails")
