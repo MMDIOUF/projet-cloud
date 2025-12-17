@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import re
 import csv
@@ -142,7 +142,7 @@ if __name__ == "__main__":
         exit(1)
 
     # Sauvegarder localement
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     csv_filename = f"annonces_{timestamp}.csv"
     local_path = save_to_local_csv(data, csv_filename)
 
