@@ -10,10 +10,53 @@ import time
 import csv
 from urllib.parse import urljoin, urlparse
 import logging
+import os
+import boto3
+from botocore.exceptions import BotoCoreError, ClientError
+from datetime import datetime
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Configuration S3
+S3_BUCKET = os.environ.get("S3_BUCKET", "m2dsia-mouhamed-diouf")
+S3_KEY_PREFIX = os.environ.get("S3_KEY_PREFIX", "scraping/keur-immo/")
+
+
+def upload_to_s3(file_path, bucket_name=None, object_name=None):
+    """
+    Téléverse un fichier vers un bucket S3
+    
+    Args:
+        file_path (str): Chemin local du fichier à téléverser
+        bucket_name (str, optional): Nom du bucket S3. Par défaut: S3_BUCKET
+        object_name (str, optional): Nom de l'objet dans S3. Par défaut: nom du fichier
+    
+    Returns:
+        bool: True si le téléversement a réussi, False sinon
+    """
+    try:
+        if bucket_name is None:
+            bucket_name = S3_BUCKET
+            
+        if object_name is None:
+            object_name = os.path.basename(file_path)
+            
+        # S'assurer que le préfixe se termine par un /
+        if S3_KEY_PREFIX and not S3_KEY_PREFIX.endswith('/'):
+            full_key = f"{S3_KEY_PREFIX}/{object_name}"
+        else:
+            full_key = f"{S3_KEY_PREFIX}{object_name}"
+            
+        s3 = boto3.client('s3')
+        s3.upload_file(file_path, bucket_name, full_key)
+        logger.info(f"Fichier uploadé avec succès vers: s3://{bucket_name}/{full_key}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Erreur lors de l'upload vers S3: {str(e)}")
+        return False
 
 class KeurImmoScraper:
     def __init__(self):

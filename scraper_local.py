@@ -8,7 +8,8 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 
 SITE_URL = os.environ.get("SITE_URL", "https://immobilier-au-senegal.com/list-layout/")
-S3_BUCKET = os.environ.get("S3_BUCKET")
+# Configuration S3
+S3_BUCKET = os.environ.get("S3_BUCKET", "m2dsia-mouhamed-diouf")  # Votre bucket par défaut
 S3_KEY_PREFIX = os.environ.get("S3_KEY_PREFIX", "scraping/")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,15 +29,40 @@ def save_to_local_csv(data, filename):
     return filepath
 
 
-def upload_to_s3(filepath, bucket, key):
-    """Upload le fichier local vers S3 si la configuration est fournie."""
-    s3_client = boto3.client("s3")
-
+def upload_to_s3(file_path, bucket_name=None, object_name=None):
+    """
+    Téléverse un fichier vers un bucket S3
+    
+    Args:
+        file_path (str): Chemin local du fichier à téléverser
+        bucket_name (str, optional): Nom du bucket S3. Par défaut: m2dsia-mouhamed-diouf
+        object_name (str, optional): Nom de l'objet dans S3. Par défaut: nom du fichier
+    
+    Returns:
+        bool: True si le téléversement a réussi, False sinon
+    """
     try:
-        s3_client.upload_file(filepath, bucket, key)
-        print(f"Fichier uploadé sur S3 : s3://{bucket}/{key}")
-    except (BotoCoreError, ClientError) as exc:
-        print(f"⚠️  Échec de l'upload S3 : {exc}")
+        if bucket_name is None:
+            bucket_name = S3_BUCKET
+            
+        if object_name is None:
+            object_name = os.path.basename(file_path)
+            
+        # S'assurer que le préfixe se termine par un /
+        if S3_KEY_PREFIX and not S3_KEY_PREFIX.endswith('/'):
+            full_key = f"{S3_KEY_PREFIX}/{object_name}"
+        else:
+            full_key = f"{S3_KEY_PREFIX}{object_name}"
+            
+        s3 = boto3.client('s3')
+        s3.upload_file(file_path, bucket_name, full_key)
+        print(f"Fichier uploadé avec succès vers: s3://{bucket_name}/{full_key}")
+        return True
+        
+    except Exception as e:
+        print(f"Erreur lors de l'upload vers S3: {str(e)}")
+        return False
+
 
 def scrape_site(url: str):
     headers = {
@@ -107,18 +133,21 @@ def scrape_site(url: str):
     return results
 
 if __name__ == "__main__":
+    print(f"Début du scraping sur {SITE_URL}")
     data = scrape_site(SITE_URL)
     print(f"{len(data)} annonces récupérées")
 
+    if not data:
+        print("Aucune donnée à sauvegarder. Arrêt du script.")
+        exit(1)
+
+    # Sauvegarder localement
     timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
     csv_filename = f"annonces_{timestamp}.csv"
-    
-    # Sauvegarde locale en CSV
     local_path = save_to_local_csv(data, csv_filename)
 
-    # Upload S3 automatique si configuration disponible
-    if S3_BUCKET:
-        s3_key = f"{S3_KEY_PREFIX.rstrip('/')}/{csv_filename}"
-        upload_to_s3(local_path, S3_BUCKET, s3_key)
+    # Upload vers S3
+    if upload_file_s3(local_path):
+        print("Téléversement S3 réussi!")
     else:
-        print("⚠️  S3_BUCKET non défini : upload S3 ignoré.")
+        print("Échec du téléversement S3, vérifiez les logs pour plus de détails")
